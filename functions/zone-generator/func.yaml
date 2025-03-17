@@ -1,0 +1,9 @@
+specVersion: 0.36.0
+name: zone-generator
+runtime: rust
+created: 2025-03-16T16:25:08.185399-07:00
+invoke: cloudevent
+build:
+  buildEnvs:
+  - name: BP_RUSTUP_ENABLED
+    value: "false"
