@@ -1,7 +1,8 @@
 use std::fs::File;
 use std::io::BufWriter;
-use std::path::Path;
 use std::io::Write;
+use std::path::Path;
+use std::process::Command;
 
 use crate::config::HandlerConfig;
 use actix_web::web;
@@ -28,6 +29,23 @@ pub async fn handle(event: Event, config: web::Data<HandlerConfig>) -> String {
     };
     let mut writer = BufWriter::new(file);
     write!(writer, "{}", j).unwrap();
+
+    use std::process::Command;
+
+    let output = Command::new("rustc")
+        .arg("--version")
+        .output()
+        .unwrap_or_else(|e| panic!("failed to execute process: {}", e));
+
+    if output.status.success() {
+        let s = String::from_utf8_lossy(&output.stdout);
+
+        print!("rustc succeeded and stdout was:\n{}", s);
+    } else {
+        let s = String::from_utf8_lossy(&output.stderr);
+
+        print!("rustc failed and stderr was:\n{}", s);
+    }
 
     "Event processed".to_owned()
 }
