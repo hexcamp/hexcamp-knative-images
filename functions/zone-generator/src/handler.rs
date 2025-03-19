@@ -6,11 +6,12 @@ use std::process::Command;
 
 use crate::config::HandlerConfig;
 use actix_web::web;
+use actix_web::{http::header::ContentType, HttpResponse};
 use cloudevents::Data;
 use cloudevents::Event;
 use serde_json::{from_slice, from_str, json};
 
-pub async fn handle(event: Event, config: web::Data<HandlerConfig>) -> String {
+pub async fn handle(event: Event, config: web::Data<HandlerConfig>) -> HttpResponse {
     println!("event: {}", event);
 
     let input = match event.data() {
@@ -46,7 +47,12 @@ pub async fn handle(event: Event, config: web::Data<HandlerConfig>) -> String {
         let s = String::from_utf8_lossy(&output.stderr);
 
         print!("command failed and stderr was:\n{}", s);
+    return HttpResponse::InternalServerError()
+        .content_type(ContentType::plaintext())
+        .body("Error")
     }
 
-    "Event processed".to_owned()
+    HttpResponse::Ok()
+        .content_type(ContentType::plaintext())
+        .body("Event processed")
 }
