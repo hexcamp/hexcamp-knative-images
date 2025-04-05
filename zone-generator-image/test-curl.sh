@@ -7,5 +7,5 @@ curl -v \
   -H 'ce-id: 1' \
   -H 'ce-source: http://cloudevents.io' \
   -H 'ce-type: dev.knative.example' \
-  http://127.0.0.1:8080
+  http://127.0.0.1:10080
 
