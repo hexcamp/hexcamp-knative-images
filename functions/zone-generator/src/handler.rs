@@ -30,6 +30,7 @@ pub async fn handle(event: Event, config: web::Data<HandlerConfig>) -> HttpRespo
     };
     let mut writer = BufWriter::new(file);
     write!(writer, "{}", j).unwrap();
+    let _ = writer.flush();
 
     use std::process::Command;
 
