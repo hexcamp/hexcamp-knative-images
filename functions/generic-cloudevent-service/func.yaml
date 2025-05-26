@@ -1,0 +1,21 @@
+specVersion: 0.36.0
+name: zone-generator
+runtime: rust
+registry: ghcr.io/hexcamp
+image: ghcr.io/hexcamp/zone-generator:latest
+imageDigest: sha256:42cfbb09b26f52c05cce1d9c6ad8c5579f3872d5038bfd9bd5c55073eef940e2
+created: 2025-03-16T16:25:08.185399-07:00
+build:
+  buildpacks:
+  - docker.io/paketocommunity/rust
+  builder: pack
+  buildEnvs: []
+run:
+  volumes: []
+  envs: []
+deploy:
+  namespace: repair
+  annotations: {}
+  options: {}
+  labels: []
+  healthEndpoints: {}
