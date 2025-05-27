@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4
 
-FROM ghcr.io/hexcamp/zone-generator@sha256:824904ab11fc380ad36e789e1cbb1d788c685cf8765f691a3eb9f20538b156ff AS func
+FROM ghcr.io/hexcamp/generic-cloudevent-service@sha256:f5c6ea37b233ecf474e922049020559e5f188c06ff092fbe338d1d91cd49c3bf AS func
 
 FROM ubuntu:noble
 
@@ -8,8 +8,7 @@ USER root
 
 RUN apt -y update
 RUN apt -y upgrade
-RUN apt -y install jq curl git csvkit xz-utils vim rclone
-RUN curl -sSfL https://github.com/mitsuhiko/minijinja/releases/latest/download/minijinja-cli-installer.sh | sh
+RUN apt -y install jq curl vim
 
 USER 1000
 
