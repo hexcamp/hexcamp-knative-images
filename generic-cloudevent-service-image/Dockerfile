@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4
 
-FROM ghcr.io/hexcamp/generic-cloudevent-service@sha256:f5c6ea37b233ecf474e922049020559e5f188c06ff092fbe338d1d91cd49c3bf AS func
+FROM ghcr.io/hexcamp/generic-cloudevent-service@sha256:644d27f78bb32c1804a88efc619fedb709827ec41023d4250d9317ea1c86c410 AS func
 
 FROM ubuntu:noble
 

@@ -35,8 +35,7 @@ pub async fn handle(event: Event, config: web::Data<HandlerConfig>) -> HttpRespo
     use std::process::Command;
 
     let output = Command::new("sh")
-        .arg("-c")
-        .arg("process-cloudevent.sh")
+        .arg("/scripts/process-cloudevent.sh")
         .output()
         .unwrap_or_else(|e| panic!("failed to execute process: {}", e));
 
