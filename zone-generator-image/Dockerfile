@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4
 
-FROM ghcr.io/hexcamp/zone-generator@sha256:824904ab11fc380ad36e789e1cbb1d788c685cf8765f691a3eb9f20538b156ff AS func
+FROM ghcr.io/hexcamp/zone-generator@sha256:fb5ee34cb19410d78c5c29ba87c9de0e5cc504980cf31835bdfdcfc297da96e5 AS func
 
 FROM ubuntu:noble
 
