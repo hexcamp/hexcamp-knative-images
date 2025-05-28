@@ -57,11 +57,27 @@ pub async fn handle(event: Event, config: web::Data<HandlerConfig>) -> HttpRespo
     }
     */
     println!("Running update-zones.sh...");
-    let big_cmd = cmd!("sh", "-c", "update-zones.sh");
-    let reader = big_cmd.stderr_to_stdout().reader().unwrap();
-    let lines = BufReader::new(reader).lines();
-    for line in lines {
-        println!("{}", line.unwrap());
+    let update_zones_cmd = cmd!("sh", "-c", "update-zones.sh");
+    let reader_result = update_zones_cmd.stderr_to_stdout().reader();
+
+    match reader_result {
+        Ok(reader) => {
+            let lines = BufReader::new(reader).lines();
+            for line_result in lines {
+                match line_result {
+                    Ok(line) => {
+                        println!("{}", line);
+                    }
+                    Err(e) => {
+                        println!("Error! {}", e);
+                        break;
+                    }
+                }
+            }
+        },
+        Err(e) => {
+            println!("Error! {}", e);
+        }
     }
     println!("Finished running update-zones.sh");
 
