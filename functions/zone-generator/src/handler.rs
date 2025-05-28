@@ -1,8 +1,10 @@
+use duct::cmd;
 use std::fs::File;
+use std::io::prelude::*;
+use std::io::BufReader;
 use std::io::BufWriter;
 use std::io::Write;
 use std::path::Path;
-use std::process::Command;
 
 use crate::config::HandlerConfig;
 use actix_web::web;
@@ -32,6 +34,7 @@ pub async fn handle(event: Event, config: web::Data<HandlerConfig>) -> HttpRespo
     write!(writer, "{}", j).unwrap();
     let _ = writer.flush();
 
+    /*
     use std::process::Command;
 
     let output = Command::new("sh")
@@ -48,10 +51,19 @@ pub async fn handle(event: Event, config: web::Data<HandlerConfig>) -> HttpRespo
         let s = String::from_utf8_lossy(&output.stderr);
 
         print!("command failed and stderr was:\n{}", s);
-    return HttpResponse::InternalServerError()
-        .content_type(ContentType::plaintext())
-        .body("Error")
+        return HttpResponse::InternalServerError()
+            .content_type(ContentType::plaintext())
+            .body("Error");
     }
+    */
+    println!("Running update-zones.sh...");
+    let big_cmd = cmd!("sh", "-c", "update-zones.sh");
+    let reader = big_cmd.stderr_to_stdout().reader().unwrap();
+    let lines = BufReader::new(reader).lines();
+    for line in lines {
+        println!("{}", line.unwrap());
+    }
+    println!("Finished running update-zones.sh");
 
     HttpResponse::Ok()
         .content_type(ContentType::plaintext())
