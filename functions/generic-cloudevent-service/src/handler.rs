@@ -1,14 +1,16 @@
 use std::fs::File;
+use std::io::prelude::*;
+use std::io::BufReader;
 use std::io::BufWriter;
 use std::io::Write;
 use std::path::Path;
-use std::process::Command;
 
 use crate::config::HandlerConfig;
 use actix_web::web;
 use actix_web::{http::header::ContentType, HttpResponse};
 use cloudevents::Data;
 use cloudevents::Event;
+use duct::cmd;
 use serde_json::{from_slice, from_str, json};
 
 pub async fn handle(event: Event, config: web::Data<HandlerConfig>) -> HttpResponse {
@@ -32,25 +34,30 @@ pub async fn handle(event: Event, config: web::Data<HandlerConfig>) -> HttpRespo
     write!(writer, "{}", j).unwrap();
     let _ = writer.flush();
 
-    use std::process::Command;
+    println!("Running /scripts/process-cloudevent.sh...");
+    let update_zones_cmd = cmd!("sh", "/scripts/process-cloudevent.sh");
+    let reader_result = update_zones_cmd.stderr_to_stdout().reader();
 
-    let output = Command::new("sh")
-        .arg("/scripts/process-cloudevent.sh")
-        .output()
-        .unwrap_or_else(|e| panic!("failed to execute process: {}", e));
-
-    if output.status.success() {
-        let s = String::from_utf8_lossy(&output.stdout);
-
-        print!("command succeeded and stdout was:\n{}", s);
-    } else {
-        let s = String::from_utf8_lossy(&output.stderr);
-
-        print!("command failed and stderr was:\n{}", s);
-    return HttpResponse::InternalServerError()
-        .content_type(ContentType::plaintext())
-        .body("Error")
+    match reader_result {
+        Ok(reader) => {
+            let lines = BufReader::new(reader).lines();
+            for line_result in lines {
+                match line_result {
+                    Ok(line) => {
+                        println!("{}", line);
+                    }
+                    Err(e) => {
+                        println!("Error! {}", e);
+                        break;
+                    }
+                }
+            }
+        }
+        Err(e) => {
+            println!("Error! {}", e);
+        }
     }
+    println!("Finished running /scripts/process-cloudevent.sh");
 
     HttpResponse::Ok()
         .content_type(ContentType::plaintext())

@@ -1,4 +1,3 @@
-use duct::cmd;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
@@ -11,6 +10,7 @@ use actix_web::web;
 use actix_web::{http::header::ContentType, HttpResponse};
 use cloudevents::Data;
 use cloudevents::Event;
+use duct::cmd;
 use serde_json::{from_slice, from_str, json};
 
 pub async fn handle(event: Event, config: web::Data<HandlerConfig>) -> HttpResponse {
@@ -34,28 +34,6 @@ pub async fn handle(event: Event, config: web::Data<HandlerConfig>) -> HttpRespo
     write!(writer, "{}", j).unwrap();
     let _ = writer.flush();
 
-    /*
-    use std::process::Command;
-
-    let output = Command::new("sh")
-        .arg("-c")
-        .arg("update-zones.sh")
-        .output()
-        .unwrap_or_else(|e| panic!("failed to execute process: {}", e));
-
-    if output.status.success() {
-        let s = String::from_utf8_lossy(&output.stdout);
-
-        print!("command succeeded and stdout was:\n{}", s);
-    } else {
-        let s = String::from_utf8_lossy(&output.stderr);
-
-        print!("command failed and stderr was:\n{}", s);
-        return HttpResponse::InternalServerError()
-            .content_type(ContentType::plaintext())
-            .body("Error");
-    }
-    */
     println!("Running update-zones.sh...");
     let update_zones_cmd = cmd!("sh", "-c", "update-zones.sh");
     let reader_result = update_zones_cmd.stderr_to_stdout().reader();
@@ -74,7 +52,7 @@ pub async fn handle(event: Event, config: web::Data<HandlerConfig>) -> HttpRespo
                     }
                 }
             }
-        },
+        }
         Err(e) => {
             println!("Error! {}", e);
         }
